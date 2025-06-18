@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: laravel-app       # Resource name used in kubectl and dashboard
+  labels:
+    app: laravel          # Label used to group and match with Services later
+spec:
+  replicas: 1             # Run only one pod for now
+  selector:
+    matchLabels:
+      app: laravel        # Match pods with this label
+  template:
+    metadata:
+      labels:
+        app: laravel      # Pods will carry this label (must match selector above)
+    spec:
+      containers:
+        - name: laravel
+          image: your-laravel-image:latest   # Replace with your actual image (can be on DockerHub or local)
+          ports:
+            - containerPort: 9000            # Laravel running under php-fpm usually listens on port 9000
+          env:                               # Optional - just show they can pass variables here
+            - name: APP_ENV
+              value: local
