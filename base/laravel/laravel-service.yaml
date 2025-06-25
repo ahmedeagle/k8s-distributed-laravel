@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: laravel-service
+  labels:
+    app: laravel
+spec:
+  selector:
+    app: laravel
+  type: NodePort  # ✅ For Minikube; in prod, switch to ClusterIP + Ingress
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+      nodePort: 30081

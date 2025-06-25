@@ -1,4 +1,6 @@
 resources:
 - laravel-deployment.yaml
+- laravel-service.yaml
+- nginx-configmap.yaml
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization

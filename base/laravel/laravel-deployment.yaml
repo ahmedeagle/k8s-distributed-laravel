@@ -1,24 +1,50 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: laravel-app       # Resource name used in kubectl and dashboard
+  name: laravel-app
   labels:
-    app: laravel          # Label used to group and match with Services later
+    app: laravel
 spec:
-  replicas: 1             # Run only one pod for now
   selector:
     matchLabels:
-      app: laravel        # Match pods with this label
+      app: laravel
   template:
     metadata:
       labels:
-        app: laravel      # Pods will carry this label (must match selector above)
+        app: laravel
     spec:
+      volumes:
+        - name: nginx-config
+          configMap:
+            name: laravel-nginx-config
+
       containers:
         - name: laravel
-          image: your-laravel-image:latest   # Replace with your actual image (can be on DockerHub or local)
+          image: laravel-application-local-image:latest
+          imagePullPolicy: Never
           ports:
-            - containerPort: 9000            # Laravel running under php-fpm usually listens on port 9000
-          env:                               # Optional - just show they can pass variables here
+            - containerPort: 9000
+          env:
             - name: APP_ENV
               value: local
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+        - name: nginx
+          image: nginx:alpine
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: nginx-config
+              mountPath: /etc/nginx/conf.d
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "50m"
+            limits:
+              memory: "256Mi"
+              cpu: "200m"
