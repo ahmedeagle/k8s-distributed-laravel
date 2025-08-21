@@ -1,3 +1,4 @@
+
 apiVersion: v1
 kind: Service
 metadata:
@@ -7,7 +8,7 @@ metadata:
 spec:
   selector:
     app: laravel
-  type: NodePort  # ✅ For Minikube; in prod, switch to ClusterIP + Ingress
+  type: NodePort
   ports:
     - name: http
       port: 80

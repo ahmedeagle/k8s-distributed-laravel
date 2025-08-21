@@ -5,6 +5,7 @@ metadata:
   labels:
     app: laravel
 spec:
+  replicas: 1
   selector:
     matchLabels:
       app: laravel
@@ -17,6 +18,17 @@ spec:
         - name: nginx-config
           configMap:
             name: laravel-nginx-config
+        - name: shared-code
+          emptyDir: {}
+
+      initContainers:
+        - name: copy-laravel-code
+          image: laravel-application-local-image:latest
+          imagePullPolicy: Never
+          command: ["sh", "-c", "cp -r --no-preserve=mode,ownership,timestamps /var/www/. /shared-code/"]
+          volumeMounts:
+            - name: shared-code
+              mountPath: /shared-code
 
       containers:
         - name: laravel
@@ -24,9 +36,27 @@ spec:
           imagePullPolicy: Never
           ports:
             - containerPort: 9000
+          volumeMounts:
+            - name: shared-code
+              mountPath: /var/www
           env:
             - name: APP_ENV
               value: local
+            - name: DB_HOST
+              value: mysql
+            - name: DB_DATABASE
+              value: emr
+            - name: DB_USERNAME
+              value: laravel
+            - name: DB_PASSWORD
+              value: laravelpassword
+            - name: SESSION_DRIVER
+              value: file
+            - name: CACHE_STORE
+              value: file
+            - name: QUEUE_CONNECTION
+              value: sync
+          command: ["php-fpm", "-F"]
           resources:
             requests:
               memory: "128Mi"
@@ -34,6 +64,7 @@ spec:
             limits:
               memory: "512Mi"
               cpu: "500m"
+
         - name: nginx
           image: nginx:alpine
           ports:
@@ -41,6 +72,8 @@ spec:
           volumeMounts:
             - name: nginx-config
               mountPath: /etc/nginx/conf.d
+            - name: shared-code  # Critical for accessing index.php
+              mountPath: /var/www
           resources:
             requests:
               memory: "64Mi"

@@ -7,17 +7,25 @@ data:
     server {
         listen 80;
         root /var/www/public;
+        index index.php;
 
-        index index.php index.html;
-
-        location / {
-            try_files $uri $uri/ /index.php?$query_string;
+        # Handle static files first
+        location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff2)$ {
+            expires max;
+            try_files $uri =404;
         }
 
+        # Handle PHP files
         location ~ \.php$ {
-            include fastcgi_params;
-            fastcgi_pass 127.0.0.1:9000;
+            fastcgi_pass localhost:9000;
             fastcgi_index index.php;
+            include fastcgi_params;
             fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+            fastcgi_param PATH_INFO $fastcgi_path_info;
+        }
+
+        # Laravel pretty URLs - pass everything to index.php
+        location / {
+            try_files $uri $uri/ /index.php?$query_string;
         }
     }
