@@ -1,6 +1,6 @@
 resources:
 - laravel/
-- mysql/
+#- mysql/
 
 # This file is a Kustomization file for Kubernetes, which allows you to manage and customize Kubernetes resources.
 
