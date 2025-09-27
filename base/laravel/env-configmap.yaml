@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: laravel-env-config
+data:
+  .env: |-
+    APP_NAME: "Laravel"
+    APP_ENV: "production"
+    APP_KEY: "base64:YOUR_APP_KEY_HERE"
+    APP_DEBUG: "false"
+    APP_URL: "https://your-app-url.com"
+
+    LOG_CHANNEL: "stack"
+
+    DB_CONNECTION: "mysql"
+    DB_HOST: "mysql-service"
+    DB_PORT: "3306"
+    DB_DATABASE: "your_database"
+    DB_USERNAME: "your_username"
+    DB_PASSWORD: "your_password"
+
+    CACHE_DRIVER: "file"
+    QUEUE_CONNECTION: "sync"
+    SESSION_DRIVER: "file"
+    SESSION_LIFETIME: "120"
+
+    REDIS_HOST: "redis-service"
+    REDIS_PASSWORD: "null"
+    REDIS_PORT: "6379"
+
+    MAIL_MAILER: "smtp"
+    MAIL_HOST: "smtp.mailtrap.io"
+    MAIL_PORT: "2525"
+    MAIL_USERNAME: "null"
+    MAIL_PASSWORD: "null"
+    MAIL_ENCRYPTION: "null"
+    MAIL_FROM_ADDRESS: "hello@example.com"
+    MAIL_FROM_NAME: "Laravel"

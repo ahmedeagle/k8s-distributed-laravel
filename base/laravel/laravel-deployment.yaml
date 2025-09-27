@@ -18,12 +18,22 @@ spec:
         - name: nginx-config
           configMap:
             name: laravel-nginx-config
+       # - name: env-config
+        #  configMap:
+         #   name: laravel-env-config
       containers:
         - name: laravel
-          image: laravel-application-local-image:latest
+          image: laravel-application-local-image-v2:latest
           imagePullPolicy: Never
         #  ports:
          #   - containerPort: 80
+          envFrom:
+            - secretRef:
+                name: laravel-env-secret   #read from secrets
+          #volumeMounts:
+           # - name: env-config   # read env fromm config map 
+            #  mountPath: /var/www/.env
+             # subPath: .env
           command: ["php-fpm", "-F"]
           resources:
             requests:

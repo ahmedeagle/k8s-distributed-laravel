@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: laravel-env-secret
+type: Opaque
+stringData:
+  APP_KEY: "base64:krCZ3MIrHhGWrfunYd9RAee71qk1PjvM0mUVUmVnhHo="
+  APP_ENV: production
+  APP_NAME: Laravel
+  DB_CONNECTION: mysql
+  DB_HOST: mysql  #supposed to be the mysql service 
+  DB_USERNAME: laravel
+  DB_PASSWORD: supersecretpassword
+  DB_DATABASE: app_db
+  DB_PORT: "3306"
