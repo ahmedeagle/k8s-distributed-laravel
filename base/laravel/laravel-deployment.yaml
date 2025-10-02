@@ -23,7 +23,7 @@ spec:
          #   name: laravel-env-config
       containers:
         - name: laravel
-          image: laravel-application-local-image-v3:latest
+          image: laravel-application-local-image-v4:latest
           imagePullPolicy: Never
         #  ports:
          #   - containerPort: 80

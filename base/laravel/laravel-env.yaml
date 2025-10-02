@@ -14,7 +14,8 @@ stringData:
   DB_DATABASE: app_db
   DB_PORT: "3306"
   CACHE_DRIVER: redis
-  QUEUE_DRIVER: redis
+  #QUEUE_DRIVER: redis   ## deprecated in lates laravel veriosn 
+  QUEUE_CONNECTION: redis   # ✅ not  QUEUE_DRIVER
   REDIS_HOST: redis #supposed to be  redis from redis-service.yml file 
   REDIS_PASSWORD: ""
   REDIS_PORT: "6379"

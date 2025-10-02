@@ -1,0 +1,12 @@
+minikube addons enable ingress
+# Verify installation
+# kubectl get pods -n ingress-nginx
+# kubectl get services -n ingress-nginx
+#  hostname -I  
+#sudo nano /etc/hosts  or for windows C:\Windows\System32\drivers\etc\hosts
+
+#192.168.49.2 laravel.local
+
+
+# For local testing, you may need to set up port forwarding:
+# kubectl port-forward -n ingress-nginx service/ingress-nginx-controller 8080:80

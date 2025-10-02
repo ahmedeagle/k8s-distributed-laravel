@@ -1,6 +1,7 @@
 resources:
 - laravel-deployment.yaml
 - laravel-service.yaml
+- laravel-ingress.yaml
 - nginx-configmap.yaml
 - env-configmap.yaml
 - laravel-env.yaml
