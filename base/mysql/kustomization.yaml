@@ -1,0 +1,8 @@
+resources:
+- mysql-secrets.yaml
+- mysql-statefullset.yaml
+- mysql-service.yaml
+#- mysql-pvc.yml
+- mysql-pv.yml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization

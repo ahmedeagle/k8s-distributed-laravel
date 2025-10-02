@@ -4,15 +4,7 @@ resources:
 - nginx-configmap.yaml
 - env-configmap.yaml
 - laravel-env.yaml
-- mysql-secrets.yaml
-- serviceaccount.yaml
-- role.yaml
-- rolebinding.yaml
-- mysql-statefullset.yaml
-- mysql-service.yaml
+- laravel-worker.yaml
 #- mysql-pvc.yml
-- retain-sc.yml
-- storage-provisioner-rbac.yaml
-- mysql-pv.yml
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization

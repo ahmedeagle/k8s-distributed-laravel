@@ -8,8 +8,16 @@ stringData:
   APP_ENV: production
   APP_NAME: Laravel
   DB_CONNECTION: mysql
-  DB_HOST: mysql  #supposed to be the mysql service 
+  DB_HOST: mysql  #supposed to be the mysql service  mysql-service.yml
   DB_USERNAME: laravel
   DB_PASSWORD: supersecretpassword
   DB_DATABASE: app_db
   DB_PORT: "3306"
+  CACHE_DRIVER: redis
+  QUEUE_DRIVER: redis
+  REDIS_HOST: redis #supposed to be  redis from redis-service.yml file 
+  REDIS_PASSWORD: ""
+  REDIS_PORT: "6379"
+  REDIS_CLIENT : "predis"
+
+
