@@ -23,10 +23,11 @@ spec:
          #   name: laravel-env-config
       containers:
         - name: laravel
-          image: laravel-application-local-image-v4:latest
+          image: laravel-application-local-image-v5:latest
           imagePullPolicy: Never
-        #  ports:
-         #   - containerPort: 80
+          ports:
+            - containerPort: 9000
+              name: php-fpm
           envFrom:
             - secretRef:
                 name: laravel-env-secret   #read from secrets
@@ -35,6 +36,39 @@ spec:
             #  mountPath: /var/www/.env
              # subPath: .env
           command: ["php-fpm", "-F"]
+          
+          # Liveness Probe - Simple TCP check for PHP-FPM process health
+          # Only checks if PHP-FPM process is running and accepting connections
+          livenessProbe:
+            tcpSocket:
+              port: 9000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+            successThreshold: 1
+          
+          # Readiness Probe - TCP check that PHP-FPM is ready to handle requests
+          # More frequent checks since this affects traffic routing
+          readinessProbe:
+            tcpSocket:
+              port: 9000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+            successThreshold: 1
+          
+          # Startup Probe - Quick TCP check during container startup
+          startupProbe:
+            tcpSocket:
+              port: 9000
+            initialDelaySeconds: 5
+            periodSeconds: 5          # More frequent during startup
+            timeoutSeconds: 3
+            failureThreshold: 12      # 12 * 5s = 1 minute max startup
+            successThreshold: 1
+          
           resources:
             requests:
               memory: "128Mi"
@@ -47,9 +81,56 @@ spec:
           image: nginx:alpine
           ports:
             - containerPort: 80
+              name: http
           volumeMounts:
             - name: nginx-config
               mountPath: /etc/nginx/conf.d
+          
+          # Liveness Probe - Uses /health/live endpoint
+          # Tests basic application aliveness through the full stack
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: 80
+              httpHeaders:
+                - name: Host
+                  value: localhost
+            initialDelaySeconds: 45    # Wait for both containers to be ready
+            periodSeconds: 15          # Less frequent for liveness
+            timeoutSeconds: 5
+            failureThreshold: 3
+            successThreshold: 1
+          
+          # Readiness Probe - Uses /health/ready endpoint  
+          # Tests all dependencies (DB, Redis, Cache, etc.)
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 80
+              httpHeaders:
+                - name: Host
+                  value: localhost
+            initialDelaySeconds: 20    # Wait for Laravel to initialize
+            periodSeconds: 10          # Frequent checks for traffic routing
+            timeoutSeconds: 8          # Longer timeout for dependency checks
+            failureThreshold: 3
+            successThreshold: 1
+          
+          # Startup Probe - Uses /health/startup endpoint
+          # Tests application initialization and configuration loading
+          startupProbe:
+            httpGet:
+              path: /health/startup
+              port: 80
+              httpHeaders:
+                - name: Host
+                  value: localhost
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 24       # 24 * 5s = 2 minutes max startup
+            successThreshold: 1
+          
           resources:
             requests:
               memory: "64Mi"
