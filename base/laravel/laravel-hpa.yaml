@@ -1,0 +1,82 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: laravel-app-hpa
+  labels:
+    app: laravel
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: laravel-app  # Matches your existing deployment name
+  
+  # REPLICA LIMITS: Define the scaling boundaries
+  minReplicas: 2          # Minimum 2 pods for high availability (never scale below this)
+  maxReplicas: 10         # Maximum 10 pods to prevent resource exhaustion
+  
+  # SCALING TRIGGERS: When HPA will add/remove pods
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70   # SCALE UP when average CPU across all pods > 70%
+                                 # SCALE DOWN when average CPU across all pods < 70%
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80   # SCALE UP when average Memory across all pods > 80%
+                                 # SCALE DOWN when average Memory across all pods < 80%
+  
+  # SCALING BEHAVIOR: How fast and how much to scale
+  behavior:
+    # SCALE UP BEHAVIOR: Respond quickly to traffic spikes
+    scaleUp:
+      stabilizationWindowSeconds: 60    # Wait 60 seconds to confirm sustained load before scaling up
+                                        # Prevents scaling up due to temporary CPU spikes
+      policies:
+      - type: Percent
+        value: 50                       # Option 1: Increase by 50% of current pods
+        periodSeconds: 60               # Check every 60 seconds
+                                        # Example: 4 pods → add 2 pods (50% of 4)
+      - type: Pods
+        value: 2                        # Option 2: Add maximum 2 pods at once
+        periodSeconds: 60               # Check every 60 seconds
+                                        # HPA will choose the SMALLER value between 50% and 2 pods
+    
+    # SCALE DOWN BEHAVIOR: Conservative approach to prevent flapping
+    scaleDown:
+      stabilizationWindowSeconds: 300   # Wait 5 minutes (300s) before scaling down
+                                        # Ensures load decrease is sustained, not temporary
+                                        # Prevents rapid scale up/down cycles
+      policies:
+      - type: Percent
+        value: 10                       # Remove only 10% of current pods at a time
+        periodSeconds: 60               # Check every 60 seconds (but only after 5min window)
+                                        # Example: 10 pods → remove 1 pod (10% of 10)
+                                        # Conservative scaling down for stability
+
+# REAL WORLD EXAMPLES:
+# 
+# 1. TRAFFIC SPIKE SCENARIO:
+#    Current: 2 pods, CPU jumps to 85%
+#    ├── HPA detects CPU > 70%
+#    ├── Waits 60 seconds (stabilization)  
+#    ├── CPU still high → Calculates: min(50% of 2 = 1 pod, max 2 pods) = 1 pod
+#    └── Scales UP to 3 pods
+#
+# 2. CONTINUED HIGH LOAD:
+#    Current: 3 pods, CPU at 80%
+#    ├── After 60 seconds, still high CPU
+#    ├── Calculates: min(50% of 3 = 1.5 ≈ 2 pods, max 2 pods) = 2 pods
+#    └── Scales UP to 5 pods
+#
+# 3. LOAD DECREASES:
+#    Current: 5 pods, CPU drops to 40%
+#    ├── HPA waits 5 minutes (300s stabilization)
+#    ├── CPU still < 70% after 5 minutes
+#    ├── Removes 10% of 5 pods = 0.5 ≈ 1 pod
+#    └── Scales DOWN to 4 pods

@@ -6,7 +6,7 @@ metadata:
     app: laravel-app
     role: worker
 spec:
-  replicas: 1
+  # replicas managed by HPA
   selector:
     matchLabels:
       app: laravel-app

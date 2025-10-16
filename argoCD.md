@@ -9,3 +9,6 @@ Username: admin
 Password:
 
 kubectl get secret argocd-initial-admin-secret  -n argocd  -o jsonpath="{.data.password}" | base64 -d   ====> IVyzmjIectQnGgUn
+
+
+kubectl patch application laravel -n argocd --type='merge' -p='{"spec":{"source":{"directory":null,"kustomize":{"images":[]}}}}'

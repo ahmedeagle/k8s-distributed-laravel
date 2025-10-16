@@ -5,7 +5,7 @@ metadata:
   labels:
     app: laravel
 spec:
-  replicas: 1
+  # replicas managed by HPA
   selector:
     matchLabels:
       app: laravel
