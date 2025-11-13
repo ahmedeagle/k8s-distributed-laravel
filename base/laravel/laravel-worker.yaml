@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: worker
-          image: laravel-application-local-image-v5:latest
+          image: 043309367638.dkr.ecr.us-east-1.amazonaws.com/laravel-app-k8s:latest
           imagePullPolicy: Never
           workingDir: /var/www  # adjust if your app lives elsewhere
           command:

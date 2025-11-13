@@ -23,7 +23,7 @@ spec:
          #   name: laravel-env-config
       containers:
         - name: laravel
-          image: laravel-application-local-image-v5:latest
+          image: 043309367638.dkr.ecr.us-east-1.amazonaws.com/laravel-app-k8s:latest
           imagePullPolicy: Never
           ports:
             - containerPort: 9000
