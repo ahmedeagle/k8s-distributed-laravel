@@ -19,7 +19,7 @@ spec:
       containers:
         - name: redis
           image: redis:7-alpine
-          imagePullPolicy: Never
+          imagePullPolicy: IfNotPresent
           args: ["--appendonly", "yes"]   # enable AOF persistence
           volumeMounts:
             - name: redis-data
