@@ -1,9 +1,9 @@
-# gp2-sc.yaml - EBS CSI StorageClass for gp2 volumes
+# gp2-sc.yaml - EBS CSI StorageClass for gp2 volumes (EKS)
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
   name: gp2
-provisioner: ebs.csi.aws.com
+provisioner: ebs.csi.eks.amazonaws.com
 parameters:
   type: gp2
   fsType: ext4
