@@ -9,8 +9,8 @@ stringData:
   APP_NAME: Laravel
   DB_CONNECTION: mysql
   DB_HOST: mysql  #supposed to be the mysql service  mysql-service.yml
-  DB_USERNAME: laravel
-  DB_PASSWORD: supersecretpassword
+  DB_USERNAME: app_user
+  DB_PASSWORD: change-me-app-password
   DB_DATABASE: app_db
   DB_PORT: "3306"
   CACHE_DRIVER: redis
