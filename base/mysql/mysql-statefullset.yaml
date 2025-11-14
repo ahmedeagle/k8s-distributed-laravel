@@ -61,4 +61,4 @@ spec:
         resources:
           requests:
             storage: 2Gi
-        storageClassName: standard-retain     
+        storageClassName: gp2     
