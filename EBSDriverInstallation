@@ -1,0 +1,12 @@
+aws eks create-pod-identity-association \
+  --cluster-name laravel-eks-prod \
+  --profile root \
+  --region us-east-1 \
+  --namespace kube-system \
+  --service-account ebs-csi-node-sa \
+  --role-arn arn:aws:iam::043309367638:role/AmazonEKSPodIdentityAmazonEBSCSIDriverRole
+
+
+✔ هذا يربط IAM role مع الـ node daemonset
+✔ وبدونه مفيش ebs-csi-node → ومفيش topology → ومفيش EBS volumes
+

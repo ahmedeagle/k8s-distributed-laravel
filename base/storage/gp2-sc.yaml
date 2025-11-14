@@ -1,0 +1,13 @@
+# gp2-sc.yaml - EBS CSI StorageClass for gp2 volumes
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: gp2
+provisioner: ebs.csi.aws.com
+parameters:
+  type: gp2
+  fsType: ext4
+  encrypted: "true"
+volumeBindingMode: WaitForFirstConsumer
+allowVolumeExpansion: true
+reclaimPolicy: Retain
