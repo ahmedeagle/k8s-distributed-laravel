@@ -6,8 +6,8 @@ resources:
 - laravel-worker-hpa.yaml
 - nginx-configmap.yaml
 - env-configmap.yaml
-- laravel-env.yaml
 - laravel-worker.yaml
+- laravel-env-sealed.yaml
 #- mysql-pvc.yml
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
