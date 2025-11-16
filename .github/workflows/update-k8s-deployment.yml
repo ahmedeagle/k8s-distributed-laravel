@@ -1,0 +1,93 @@
+name: Update Kubernetes Deployment
+
+on:
+  repository_dispatch:
+    types: [laravel-docker-updated]
+  workflow_dispatch:
+    inputs:
+      ecr_image_uri:
+        description: 'Full ECR image URI (e.g., 123456.dkr.ecr.us-east-1.amazonaws.com/laravel-app-k8s:20251116-143022-abc123)'
+        required: true
+        type: string
+
+env:
+  AWS_REGION: us-east-1
+
+jobs:
+  update-deployment:
+    name: Update Deployment Manifests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout GitOps Repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Extract Image URI
+        id: image
+        run: |
+          if [ -n "${{ github.event.inputs.ecr_image_uri }}" ]; then
+            # Manual trigger
+            IMAGE="${{ github.event.inputs.ecr_image_uri }}"
+          else
+            # Webhook trigger from laravel-docker
+            IMAGE="${{ github.event.client_payload.image }}"
+          fi
+          
+          echo "image=${IMAGE}" >> $GITHUB_OUTPUT
+          echo "📦 Using image: ${IMAGE}"
+
+      - name: Update Laravel Deployment YAML
+        env:
+          IMAGE_URI: ${{ steps.image.outputs.image }}
+        run: |
+          echo "🔄 Updating laravel-deployment.yaml..."
+          sed -i "s|image:.*|image: ${IMAGE_URI}|g" base/laravel/laravel-deployment.yaml
+          
+          echo "✅ Updated laravel-deployment.yaml"
+          grep "image:" base/laravel/laravel-deployment.yaml
+
+      - name: Update Laravel Worker Deployment YAML
+        env:
+          IMAGE_URI: ${{ steps.image.outputs.image }}
+        run: |
+          echo "🔄 Updating laravel-worker-deployment.yaml..."
+          sed -i "s|image:.*|image: ${IMAGE_URI}|g" base/laravel/laravel-worker-deployment.yaml
+          
+          echo "✅ Updated laravel-worker-deployment.yaml"
+          grep "image:" base/laravel/laravel-worker-deployment.yaml
+
+      - name: Commit and Push Changes
+        env:
+          IMAGE_URI: ${{ steps.image.outputs.image }}
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          
+          git add base/laravel/laravel-deployment.yaml
+          git add base/laravel/laravel-worker-deployment.yaml
+          
+          if git diff --staged --quiet; then
+            echo "ℹ️  No changes to commit"
+          else
+            git commit -m "chore: Update Laravel image to ${IMAGE_URI}"
+            git push
+            echo "✅ Changes pushed to Git"
+          fi
+
+      - name: Deployment Summary
+        env:
+          IMAGE_URI: ${{ steps.image.outputs.image }}
+        run: |
+          echo "## 🚀 Deployment Updated" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**New Image**: \`${IMAGE_URI}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Next Steps" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Deployment manifests updated in Git" >> $GITHUB_STEP_SUMMARY
+          echo "- 🔄 ArgoCD will automatically sync changes" >> $GITHUB_STEP_SUMMARY
+          echo "- 🎯 New pods will be deployed to EKS cluster" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Monitor deployment: \`kubectl get pods -n laravel-app -w\`" >> $GITHUB_STEP_SUMMARY
