@@ -13,6 +13,9 @@ on:
 env:
   AWS_REGION: us-east-1
 
+permissions:
+  contents: write
+
 jobs:
   update-deployment:
     name: Update Deployment Manifests
@@ -22,7 +25,7 @@ jobs:
       - name: Checkout GitOps Repository
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GITOPS_REPO_TOKEN }}
           fetch-depth: 0
 
       - name: Extract Image URI
