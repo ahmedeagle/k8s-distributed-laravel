@@ -42,6 +42,7 @@ jobs:
           echo "image=${IMAGE}" >> $GITHUB_OUTPUT
           echo "📦 Using image: ${IMAGE}"
 
+          
       - name: Update Laravel Deployment YAML
         env:
           IMAGE_URI: ${{ steps.image.outputs.image }}
