@@ -78,7 +78,7 @@ spec:
               cpu: "500m"
 
         - name: nginx
-          image: 043309367638.dkr.ecr.us-east-1.amazonaws.com/laravel-app-k8s:20251116-123842-1b45fcf
+          image: nginx:alpine
           ports:
             - containerPort: 80
               name: http
