@@ -53,11 +53,11 @@ jobs:
         env:
           IMAGE_URI: ${{ steps.image.outputs.image }}
         run: |
-          echo "🔄 Updating laravel-worker-deployment.yaml..."
-          sed -i "s|image:.*|image: ${IMAGE_URI}|g" base/laravel/laravel-worker-deployment.yaml
+          echo "🔄 Updating laravel-worker.yaml..."
+          sed -i "s|image:.*|image: ${IMAGE_URI}|g" base/laravel/laravel-worker.yaml
           
-          echo "✅ Updated laravel-worker-deployment.yaml"
-          grep "image:" base/laravel/laravel-worker-deployment.yaml
+          echo "✅ Updated laravel-worker.yaml"
+          grep "image:" base/laravel/laravel-worker.yaml
 
       - name: Commit and Push Changes
         env:
@@ -67,7 +67,7 @@ jobs:
           git config user.email "actions@github.com"
           
           git add base/laravel/laravel-deployment.yaml
-          git add base/laravel/laravel-worker-deployment.yaml
+          git add base/laravel/laravel-worker.yaml
           
           if git diff --staged --quiet; then
             echo "ℹ️  No changes to commit"
