@@ -47,7 +47,8 @@ jobs:
           IMAGE_URI: ${{ steps.image.outputs.image }}
         run: |
           echo "🔄 Updating laravel-deployment.yaml..."
-          sed -i "s|image:.*|image: ${IMAGE_URI}|g" base/laravel/laravel-deployment.yaml
+          # Update only the laravel container image, not nginx
+          sed -i "/- name: laravel/,/- name: nginx/ s|image:.*|image: ${IMAGE_URI}|" base/laravel/laravel-deployment.yaml
           
           echo "✅ Updated laravel-deployment.yaml"
           grep "image:" base/laravel/laravel-deployment.yaml
